@@ -3,14 +3,11 @@
     left: 0;
     width: auto;
     top: 0;
-    // width: 100%;
     background: white;
     background: $baseColor;
-
     text-align: center;
     box-sizing: border-box;
     transition: all 0.5s ease;
-    // transform: scale(0);
     z-index: 999;
 
 
@@ -28,7 +25,7 @@
   background: $baseColor;
 }
 
-.sPopup_content & >* {
+.sPopup_content & > * {
     width: 100%;
 
     &:first-child{
