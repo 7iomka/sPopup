@@ -1,0 +1,80 @@
+'use strict'
+
+var gulp = require('gulp'),
+    watch = require('gulp-watch'),
+    sass = require('gulp-sass'),
+    maps = require('gulp-sourcemaps'),
+    concat = require('gulp-concat'),
+    changed = require('gulp-changed'),
+    browserSync = require('browser-sync'),
+    reload = browserSync.reload,
+    gulpif = require('gulp-if'),
+    filter = require('gulp-filter'),
+    del = require('del'),
+    connect = require('gulp-connect');
+
+
+gulp.task('browser-sync', function () {
+  browserSync({
+    server: {
+      baseDir: './'
+    },
+    notify: false,
+  })
+
+})
+
+//
+// gulp.task('concat', function () {
+//   return gulp  .pipe(concat('script.js'))
+//             .pipe(gulp.dest('../public/js/'))
+//             .pipe(connect.reload())
+//             // .pipe(browserSync.reload({stream: true}))
+// })
+
+
+
+gulp.task('sass', function () {
+  return gulp.src('./scss/style.scss')
+            .pipe(maps.init())
+            .pipe(sass({
+              style: 'compressed',
+              errLogToConsole: false,
+              onError: function(err) {
+                  return notify().write(err);
+              }
+            }))
+            .pipe(maps.write())
+            .pipe(gulp.dest('./css'))
+            .pipe(connect.reload())
+});
+
+
+gulp.task('connect', function(){
+	connect.server({
+		root: './',
+		livereload: true,
+    port: 3000
+		})
+})
+
+
+//
+// gulp.task('jade', function () {
+//   return gulp.src(['jade/*.jade'])
+//             .pipe(changed('../public', {extension: '.html'}))
+//             .pipe(jade({
+//               pretty: true
+//             }))
+//             .pipe(gulp.dest('../public/'))
+//             .pipe(connect.reload())
+// })
+
+
+
+
+gulp.task('default', ['connect', 'sass'], function () {
+
+  gulp.watch('./scss/*.scss', ['sass']);
+  gulp.watch('./js/**/*.js');
+});
