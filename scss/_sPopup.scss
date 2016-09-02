@@ -5,7 +5,6 @@
     top: 0;
     background: white;
     background: $baseColor;
-    text-align: center;
     box-sizing: border-box;
     transition: all 0.5s ease;
     z-index: 999;
@@ -44,4 +43,5 @@
     right: 25px;
     background: $baseColor;
     top: 25px;
+    text-align: center;
 }
