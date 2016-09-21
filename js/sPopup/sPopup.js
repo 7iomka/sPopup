@@ -67,6 +67,7 @@
     this.containerElement.style.background = this.options.background;
     this.innerOverlayElement.style.background = this.options.overlayBackgroud;
 
+    this.closeElement.addEventListener('click', this.close.bind(this));
 
     /// Content Max Width if isset
     if(this.options.contentMaxWidth) {
@@ -166,7 +167,7 @@
               _this.isClosed = false;
               _this.isOpen = true;
 
-              initializeEvents.call(_this);
+              // initializeEvents.call(_this);
           });
 
       }
@@ -201,7 +202,7 @@
 
   function initializeEvents() {
     this.closeElement.addEventListener('click', this.close.bind(this));
-}
+  }
 
 function extendDefaults(source, properties) {
     var property;
