@@ -11,7 +11,8 @@ var gulp = require('gulp'),
     gulpif = require('gulp-if'),
     filter = require('gulp-filter'),
     del = require('del'),
-    connect = require('gulp-connect');
+    connect = require('gulp-connect'),
+    ngrok = require('ngrok');
 
 
 gulp.task('browser-sync', function () {
@@ -33,6 +34,14 @@ gulp.task('browser-sync', function () {
 // })
 
 
+gulp.task('tunnel', function () {
+  ngrok.connect({
+    proto: 'http', // http|tcp|tls
+    addr: 3000,
+  },function (err, url) {
+    console.log(url); // get url of proxyServer (external temporary url to local site)
+  });
+});
 
 gulp.task('sass', function () {
   return gulp.src('./scss/style.scss')
@@ -47,6 +56,12 @@ gulp.task('sass', function () {
             .pipe(maps.write())
             .pipe(gulp.dest('./css'))
             .pipe(connect.reload())
+});
+
+gulp.task('js', function () {
+    return gulp.src('./js/**/*')
+    // .pipe(gulp.dest('./js'))
+    .pipe(connect.reload())
 });
 
 
@@ -73,8 +88,8 @@ gulp.task('connect', function(){
 
 
 
-gulp.task('default', ['connect', 'sass'], function () {
+gulp.task('default', ['connect', 'sass', 'js', 'tunnel'], function () {
 
-  gulp.watch('./scss/*.scss', ['sass']);
-  gulp.watch('./js/**/*.js');
+  gulp.watch('scss/*.scss', ['sass']).on('change',connect.reload);
+  gulp.watch('js/**/*',['js']).on('change',connect.reload);
 });
