@@ -1,38 +1,105 @@
-*, *::after, *::before{
-  box-sizing: border-box;
+*,
+*:after,
+*:before {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
 }
-.container{
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-}
-
-article{
-  width: 30%;
-  min-width: 300px;
-  line-height: 1.5;
-  border: 1px solid $baseColor;
-  margin: 20px 0;
-
-  img{
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
     display: block;
+}
+figure {
+    margin: 0;
+}
+.mockup-section {
+    padding: 80px 0;
+    min-height: 400px;
+    &--dark {
+        background: #f4f4f4;
+    }
+}
+.mockup-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2em;
+}
+.mockup-grid {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    &__item {
+        background: #f4f4f4;
+        position: relative;
+        float: left;
+        width: 100%;
+        margin: 0 0 30px;
+        padding: 0 20px;
+    }
+}
+.mockup-heading {
     width: 100%;
-  }
-
-  h2{
-    font-size: 20px;
-    padding: 0 20px;
-  }
-
-  p{
-    opacity: .7;
-    padding: 0 20px;
-  }
+    margin: 0;
+    &--single {
+        padding: 0 20px 1.5em;
+    }
+}
+.mockup-width--third {
+    width: 33%;
+}
+.mockup-img {
+    background: rgba(0,0,0,0.08);
+    text-align: center;
+    line-height: 200px;
+    height: 200px;
+    font-size: 40px;
+    color: rgba(0, 0, 0, 0.1);
 }
 
-body{
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+.mockup-img .demo-img {
+    width: 64px;
+    height: 64px;
+    background: url('/img/demo-img.svg') 50% no-repeat;
+    background-size: cover;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.mockup-caption--box {
+    background: white;
+    padding: 20px 20px 30px;
+    text-align: center;
+}
+
+.mockup-caption > h3 {
+    margin: 0;
+    padding: 1em 0 0.5em;
+}
+
+/*main*/
+
+body {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: #525252;
+}
+
+.container {
+  width: 1170px;
+  max-width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: auto;
 }
