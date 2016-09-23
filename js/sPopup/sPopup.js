@@ -70,6 +70,13 @@
     this.footerElement   = document.querySelector( this.skeletonSelectors.footerElement );
     this.closeElement   = document.querySelector( this.skeletonSelectors.closeElement );
 
+
+    /// Initial Position of container with popup
+    this.initPosition = false;
+
+    /// Set activeElement by default
+    this.activeElement = false;
+
     /********************** INITIALIZATION ACTIONS ***********************************/
 
     /// Set content background from options
@@ -79,8 +86,10 @@
     this.overlayElement.style.transition = this.options.speed + 's all ' + this.options.overlayTransition;
 
 
+
+
     /// Initalize click event on the close button
-    this.closeElement.addEventListener('click', this.close.bind(this));
+    this.closeElement.addEventListener('click', this.close.bind(this, this.activeElement));
 
 
 
@@ -92,8 +101,7 @@
       this.contentElement.style.maxWidth = finalMaxW;
     }
 
-    /// Initial Position of container with popup
-    this.initPosition = false;
+
 
     /// global switches
     this.isClosed = true;
@@ -124,6 +132,10 @@
       if (this.isClosed) {
           /// we will make a clone of clicked item and append it into contentElement
           this.contentElement.appendChild(item.cloneNode(true));
+
+          /// set item as active element
+          this.activeElement = item;
+          console.log(this.activeElement);
           /// remove all transitions from baseElement
           this.baseElement.style.transition = 'none';
           /// init start animation start-position - left,top,width,height of clicked element
@@ -193,13 +205,13 @@
           this.baseElement.classList.add('open');
           this.contentElement.classList.add(this.options.expandedClassOfContentBase);
 
+          function postOpenEvent() {
+            _this.isClosed = false;
+            _this.isOpen = true;
+            _this.baseElement.removeEventListener(transitionEND(), postOpenEvent);
+          }
           /// onTransitionend toggle corresponding global flags
-          this.baseElement.addEventListener(transitionEND(), function(e) {
-
-              _this.isClosed = false;
-              _this.isOpen = true;
-              console.log(e.target);
-          });
+          this.baseElement.addEventListener(transitionEND(), postOpenEvent);
 
       }
 
@@ -208,8 +220,9 @@
   }
 
 
-  sPopup.prototype.close = function() {
+  sPopup.prototype.close = function(item) {
       console.log(this.isOpen);
+      console.log('item in close func is: ', item);
       /// If current state of popup is opened
       if (this.isOpen) {
           /// append for baseElement styles memoized in initPosition of previous (open-event)
@@ -217,14 +230,15 @@
           /// base memoization
           var _this = this;
 
-          /// onTransitionend
-          this.baseElement.addEventListener(transitionEND(), function() {
+
+          function postCloseEvent() {
               /// remove all transitions from baseElement
               _this.baseElement.style.transition = 'none';
               /// toggle corresponding classes
-              _this.contentElement.classList.remove(_this.options.expandedClassOfContentBase);
+
               _this.baseElement.classList.remove('open');
               _this.baseElement.classList.add('closed');
+                _this.contentElement.classList.remove(_this.options.expandedClassOfContentBase);
 
               /// when popup finally is closed - remove html from that && toggle corresponding global flags
               if (_this.baseElement.classList.contains('closed')) {
@@ -232,7 +246,13 @@
                   _this.isClosed = true;
                   _this.isOpen = false;
               }
-          });
+              _this.baseElement.removeEventListener(transitionEND(), postCloseEvent);
+
+            }
+            /// onTransitionend
+            this.baseElement.addEventListener(transitionEND(), postCloseEvent);
+
+
       }
 
   }
