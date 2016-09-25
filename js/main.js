@@ -1,6 +1,6 @@
 var startedPopup = new sPopup('.mockup-grid__item', {
 
-  speed: 0.8,
+  duration: 0.8,
   type: 'up',
   background: '#ffe',
   // gutter: [25, 40],

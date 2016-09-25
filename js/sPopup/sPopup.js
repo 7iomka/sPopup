@@ -10,10 +10,10 @@
     this.selector = selector;
 
     var defaults = {
-        openClass: 'open',
-        closedClass: 'closed',
+        openClass: 'sPopup_open',
+        closedClass: 'sPopup_closed',
         expandedClassOfContentBase: 'sPopup__content-expanded',
-        speed: 1, /// Number
+        duration: 1, /// Number
         type: 'up', /// String
         background: '#fff', /// String
         gutter: 0, /// Number || Array
@@ -42,7 +42,7 @@
     }
 
     /// short equivavelents
-    this.speed = this.options.speed;
+    this.duration = this.options.duration;
     this.type = this.options.type;
     this.transition = this.options.transition;
     this.background = this.options.background;
@@ -83,7 +83,7 @@
     this.containerElement.style.background = this.options.background;
     /// Set overlay background from options
     this.overlayElement.style.background = this.options.overlayBackgroud;
-    this.overlayElement.style.transition = this.options.speed + 's all ' + this.options.overlayTransition;
+    this.overlayElement.style.transition = this.options.duration + 's all ' + this.options.overlayTransition;
 
 
 
@@ -149,13 +149,22 @@
           /// basic memoization
           var _this = this;
 
-          /// timeout for chaning
-          setTimeout(function() { //// ZERO timeout START
+          /// make async without 0 timeout
+          setImmediate(function() {
 
               /// reset animation transition from NONE to transition from user options
-              _this.baseElement.style.transition = _this.speed + 's ' + _this.transition + ' all';
+              _this.baseElement.style.transition = _this.duration + 's ' + _this.transition + ' all';
               /// test base reset overlay opacity
               _this.overlayElement.style.opacity = 1;
+
+              if(_this.contentElement.children.length){
+                // _this.contentElement.children.classList.add('lolka');
+                var coreChild = _this.contentElement.children[0];
+                console.table(getComputedStyle(coreChild));
+                var styles = getComputedStyle(coreChild);
+                if(styles.borderWidth !== "0px") setStyle(coreChild, {'border-width':'0'});
+                if(styles.padding !== "0px") setStyle(coreChild, {'padding':'0'});
+              }
 
               /** CROSS BROWSER calc for fullwidth && fullheight */
 
@@ -198,7 +207,7 @@
               }
 
 
-          }, 0); //// ZERO timeout FINISH
+          }); //// setImmediate FINISH
 
           /// If popup just expanded - toggle corresponding classes
           this.baseElement.classList.remove('closed');
@@ -208,6 +217,8 @@
           function postOpenEvent() {
             _this.isClosed = false;
             _this.isOpen = true;
+
+
             _this.baseElement.removeEventListener(transitionEND(), postOpenEvent);
           }
           /// onTransitionend toggle corresponding global flags
@@ -225,6 +236,8 @@
       console.log('item in close func is: ', item);
       /// If current state of popup is opened
       if (this.isOpen) {
+          var coreChild = this.contentElement.children[0];
+          coreChild.style = "";
           /// append for baseElement styles memoized in initPosition of previous (open-event)
           setStyle(this.baseElement, this.initPosition);
           /// base memoization
@@ -232,6 +245,7 @@
 
 
           function postCloseEvent() {
+
               /// remove all transitions from baseElement
               _this.baseElement.style.transition = 'none';
               /// toggle corresponding classes
@@ -256,74 +270,6 @@
       }
 
   }
-
- // Private Methods
-
-
-
-
-
-function extendDefaults(source, properties) {
-    var property;
-    for (property in properties) {
-        if (properties.hasOwnProperty(property)) {
-            source[property] = properties[property];
-        }
-    }
-    return source;
-}
-
-function transitionEND() {
-    var el = document.createElement("div");
-    if (el.style.WebkitTransition) return "webkitTransitionEnd";
-    if (el.style.OTransition) return "oTransitionEnd";
-    return 'transitionend';
-}
-
-
-function setStyle(obj, styleObject) {
-    var elem = obj;
-    for (var property in styleObject)
-        elem.style[property] = styleObject[property];
-}
-
-
-function getOffsetRect(elem) {
-
-    var box = elem.getBoundingClientRect()
-
-    var body = document.body
-    var docElem = document.documentElement
-
-    var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop
-    var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft
-
-    var clientTop = docElem.clientTop || body.clientTop || 0
-    var clientLeft = docElem.clientLeft || body.clientLeft || 0
-
-    var top = box.top + scrollTop - clientTop
-    var left = box.left + scrollLeft - clientLeft
-
-    return {
-        top: Math.round(top) + 'px',
-        left: Math.round(left) + 'px',
-        width: elem.offsetWidth + 'px',
-        height: elem.offsetHeight + 'px'
-    }
-}
-
-var getScrollbarWidth = function() {
-    var div, width = getScrollbarWidth.width;
-    if (width === undefined) {
-        div = document.createElement('div');
-        div.innerHTML = '<div style="width:50px;height:50px;position:absolute;left:-50px;top:-50px;overflow:auto;"><div style="width:1px;height:100px;"></div></div>';
-        div = div.firstChild;
-        document.body.appendChild(div);
-        width = getScrollbarWidth.width = div.offsetWidth - div.clientWidth;
-        document.body.removeChild(div);
-    }
-    return width;
-};
 
 
 
