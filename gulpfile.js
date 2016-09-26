@@ -1,5 +1,5 @@
 'use strict'
-
+// npm i --save-dev gulp gulp-watch gulp-sass gulp-sourcemaps gulp-concat gulp-changed browser-sync gulp-if gulp-filter del gulp-connect ngrok
 var gulp = require('gulp'),
     watch = require('gulp-watch'),
     sass = require('gulp-sass'),
