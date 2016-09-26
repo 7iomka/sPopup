@@ -10,8 +10,8 @@
     this.selector = selector;
 
     var defaults = {
-        openClass: 'sPopup_open',
-        closedClass: 'sPopup_closed',
+        openClass: 'sPopup--open',
+        closedClass: 'sPopup--closed',
         expandedClassOfContentBase: 'sPopup__content-expanded',
         duration: 1, /// Number
         type: 'up', /// String
@@ -57,7 +57,7 @@
     document.body.classList.add('sPopup_attached');
 
     /// Initialize basic skeleton op popup and insert that in end of the body
-    var skeleton = '<div class="sPopup closed"> <div class="sPopup_container"> <div class="sPopup_header"> <div class="sPopup_close">x</div> </div> <div class="sPopup_content"></div> <div class="sPopup_footer"></div> </div> </div> <div class="sPopup_overlay"></div>';
+    var skeleton = '<div class="sPopup '+ this.options.closedClass +'"> <div class="sPopup_container"> <div class="sPopup_header"> <div class="sPopup_close">x</div> </div> <div class="sPopup_content"></div> <div class="sPopup_footer"></div> </div> </div> <div class="sPopup_overlay"></div>';
     document.body.insertAdjacentHTML('beforeEnd', skeleton);
 
     /// Define HTML elements using skeletonSelectors object with selectors
@@ -74,6 +74,7 @@
     /// Initial Position of container with popup
     this.initPosition = false;
 
+    //<<<<<<<<<<<<<<<<<<<ТУТ СОХРАНЯЕТСЯ АКТИВНЫЙ ЭЛЕМЕНТ ПО ОТКРЫТИЮ ОКНА>>>>>>>>>>>>>>>>>>>>>>>>>>>
     /// Set activeElement by default
     this.activeElement = false;
 
@@ -86,20 +87,13 @@
     this.overlayElement.style.transition = this.options.duration + 's all ' + this.options.overlayTransition;
 
 
-
-
+  //<<<<<<<<<<<<<<<<<<<СЮДА МНЕ НАДО ПРОКИНУТЬ ИМЕННО ОБНОВЛЁННЫЙ АКТИВНЫЙ ЭЛЕМЕНТ>>>>>>>>>>>>>>>>>>>>>>>>>>>
     /// Initalize click event on the close button
     this.closeElement.addEventListener('click', this.close.bind(this, this.activeElement));
 
 
 
-    /// Some actions, if in options user will determine contentMaxWidth option
-    if(this.options.contentMaxWidth) {
-      this.baseElement.classList.add('sPopup_not_fullwidth');
-      var hasPercent = this.options.contentMaxWidth.indexOf('%') >= 0;
-      var finalMaxW = hasPercent ? this.options.contentMaxWidth : this.options.contentMaxWidth + 'px';
-      this.contentElement.style.maxWidth = finalMaxW;
-    }
+
 
 
 
@@ -127,7 +121,7 @@
   /********************************* INIT METHOD END ********************************/
 
   sPopup.prototype.open = function(item) {
-    console.log(this.isClosed);
+
       /// If current state of popup is closed
       if (this.isClosed) {
           /// we will make a clone of clicked item and append it into contentElement
@@ -135,12 +129,10 @@
 
           /// set item as active element
           this.activeElement = item;
-          console.log(this.activeElement);
           /// remove all transitions from baseElement
           this.baseElement.style.transition = 'none';
           /// init start animation start-position - left,top,width,height of clicked element
           var startPos = getOffsetRect(item);
-          console.log(startPos);
           /// memoization of animation start-position for next usage in close animation
           this.initPosition = startPos; // save position of element, from where we clicked
           /// append animation start-position
@@ -153,66 +145,21 @@
           setImmediate(function() {
 
               /// reset animation transition from NONE to transition from user options
-              _this.baseElement.style.transition = _this.duration + 's ' + _this.transition + ' all';
+              // _this.baseElement.style.transition = _this.duration + 's ' + _this.transition + ' all';
               /// test base reset overlay opacity
               _this.overlayElement.style.opacity = 1;
 
-              if(_this.contentElement.children.length){
-                // _this.contentElement.children.classList.add('lolka');
-                var coreChild = _this.contentElement.children[0];
-                console.table(getComputedStyle(coreChild));
-                var styles = getComputedStyle(coreChild);
-                if(styles.borderWidth !== "0px") setStyle(coreChild, {'border-width':'0'});
-                if(styles.padding !== "0px") setStyle(coreChild, {'padding':'0'});
-              }
+              _this.baseElement.style = "";
 
-              /** CROSS BROWSER calc for fullwidth && fullheight */
+              /// If popup just expanded - toggle corresponding classes
+              _this.baseElement.classList.add(_this.options.openClass);
+              _this.baseElement.classList.remove(_this.options.closedClass);
 
-              var scrollWidth = Math.max(
-                  document.body.scrollWidth, document.documentElement.scrollWidth,
-                  document.body.offsetWidth, document.documentElement.offsetWidth,
-                  document.body.clientWidth, document.documentElement.clientWidth
-              );
-
-              var scrollHeight = Math.max(
-                  document.body.scrollHeight, document.documentElement.scrollHeight,
-                  document.body.offsetHeight, document.documentElement.offsetHeight,
-                  document.body.clientHeight, document.documentElement.clientHeight
-              );
-
-
-              /// Calculation of final expanded popup width && height, depended on options parametrs, like gutter
-              var newWidth = scrollWidth - (Array.isArray(_this.options.gutter) ? _this.options.gutter[0] : _this.options.gutter) * 2 + 'px';
-              var newHeight = scrollHeight - (Array.isArray(_this.options.gutter) ? _this.options.gutter[1] : _this.options.gutter) * 2 + 'px';
-              /// Apply new parametrs
-              _this.baseElement.style.width = newWidth;
-              _this.baseElement.style.height = newHeight;
-
-              /**
-               * make gutter
-               */
-
-              if (Array.isArray(_this.options.gutter)) {
-
-                  var gutterLeft = _this.options.gutter[0],
-                      gutterTop = _this.options.gutter[1];
-
-                  _this.baseElement.style.left = gutterLeft + 'px';
-                  _this.baseElement.style.top = gutterTop + 'px';
-              } else {
-
-                  _this.baseElement.style.left = _this.options.gutter + 'px';
-                  _this.baseElement.style.top = _this.options.gutter + 'px';
-
-              }
-
+              _this.contentElement.classList.add(_this.options.expandedClassOfContentBase);
 
           }); //// setImmediate FINISH
 
-          /// If popup just expanded - toggle corresponding classes
-          this.baseElement.classList.remove('closed');
-          this.baseElement.classList.add('open');
-          this.contentElement.classList.add(this.options.expandedClassOfContentBase);
+
 
           function postOpenEvent() {
             _this.isClosed = false;
@@ -231,13 +178,11 @@
   }
 
 
-  sPopup.prototype.close = function(item) {
-      console.log(this.isOpen);
-      console.log('item in close func is: ', item);
+  sPopup.prototype.close = function(item, e) {
       /// If current state of popup is opened
       if (this.isOpen) {
-          var coreChild = this.contentElement.children[0];
-          coreChild.style = "";
+            //<<<<<<<<<<<<<<<<<<<ВЫВЕДЕТ FALSE - НЕ ОБНОВИЛСЯ >>>>>>>>>>>>>>>>>>>>>>>>>>>
+          console.log(item);
           /// append for baseElement styles memoized in initPosition of previous (open-event)
           setStyle(this.baseElement, this.initPosition);
           /// base memoization
@@ -246,21 +191,35 @@
 
           function postCloseEvent() {
 
-              /// remove all transitions from baseElement
-              _this.baseElement.style.transition = 'none';
-              /// toggle corresponding classes
 
-              _this.baseElement.classList.remove('open');
-              _this.baseElement.classList.add('closed');
-                _this.contentElement.classList.remove(_this.options.expandedClassOfContentBase);
+              setImmediate(function() {
+                /// remove all transitions from baseElement
+                _this.baseElement.style.transition = 'none';
+              });
 
-              /// when popup finally is closed - remove html from that && toggle corresponding global flags
-              if (_this.baseElement.classList.contains('closed')) {
-                  _this.contentElement.innerHTML = '';
-                  _this.isClosed = true;
-                  _this.isOpen = false;
-              }
-              _this.baseElement.removeEventListener(transitionEND(), postCloseEvent);
+              /// make async without 0 timeout
+              setImmediate(function() {
+                /// toggle corresponding classes
+                _this.baseElement.classList.add(_this.options.closedClass);
+                _this.baseElement.classList.remove(_this.options.openClass);
+
+                  // _this.contentElement.classList.remove(_this.options.expandedClassOfContentBase);
+
+                /// when popup finally is closed - remove html from that && toggle corresponding global flags
+                if (_this.baseElement.classList.contains(_this.options.closedClass)) {
+                    _this.contentElement.innerHTML = '';
+                    _this.isClosed = true;
+                    _this.isOpen = false;
+                    setImmediate(function() {
+                      getComputedStyle( item )[ transition ];
+                      _this.baseElement.style.transition = '';
+                    });
+                }
+                _this.baseElement.removeEventListener(transitionEND(), postCloseEvent);
+
+              });
+
+
 
             }
             /// onTransitionend

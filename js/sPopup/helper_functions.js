@@ -2,6 +2,9 @@
 // This file contains all helper functions for plugin
 //
 
+
+
+
 /**
  * Extend source object with properties of another object
  * @param  {Object} source
@@ -75,3 +78,10 @@ function getOffsetRect(elem) {
  * @return {Function}
  */
 (function(d,e){"use strict";if(d.setImmediate){return}var f=1;var g={};var h=false;var j=d.document;var k;function setImmediate(a){if(typeof a!=="function"){a=new Function(""+a)}var b=new Array(arguments.length-1);for(var i=0;i<b.length;i++){b[i]=arguments[i+1]}var c={callback:a,args:b};g[f]=c;k(f);return f++}function clearImmediate(a){delete g[a]}function run(a){var b=a.callback;var c=a.args;switch(c.length){case 0:b();break;case 1:b(c[0]);break;case 2:b(c[0],c[1]);break;case 3:b(c[0],c[1],c[2]);break;default:b.apply(e,c);break}}function runIfPresent(a){if(h){setTimeout(runIfPresent,0,a)}else{var b=g[a];if(b){h=true;try{run(b)}finally{clearImmediate(a);h=false}}}}function installNextTickImplementation(){k=function(a){process.nextTick(function(){runIfPresent(a)})}}function canUsePostMessage(){if(d.postMessage&&!d.importScripts){var a=true;var b=d.onmessage;d.onmessage=function(){a=false};d.postMessage("","*");d.onmessage=b;return a}}function installPostMessageImplementation(){var b="setImmediate$"+Math.random()+"$";var c=function(a){if(a.source===d&&typeof a.data==="string"&&a.data.indexOf(b)===0){runIfPresent(+a.data.slice(b.length))}};if(d.addEventListener){d.addEventListener("message",c,false)}else{d.attachEvent("onmessage",c)}k=function(a){d.postMessage(b+a,"*")}}function installMessageChannelImplementation(){var c=new MessageChannel();c.port1.onmessage=function(a){var b=a.data;runIfPresent(b)};k=function(a){c.port2.postMessage(a)}}function installReadyStateChangeImplementation(){var c=j.documentElement;k=function(a){var b=j.createElement("script");b.onreadystatechange=function(){runIfPresent(a);b.onreadystatechange=null;c.removeChild(b);b=null};c.appendChild(b)}}function installSetTimeoutImplementation(){k=function(a){setTimeout(runIfPresent,0,a)}}var l=Object.getPrototypeOf&&Object.getPrototypeOf(d);l=l&&l.setTimeout?l:d;if({}.toString.call(d.process)==="[object process]"){installNextTickImplementation()}else if(canUsePostMessage()){installPostMessageImplementation()}else if(d.MessageChannel){installMessageChannelImplementation()}else if(j&&"onreadystatechange"in j.createElement("script")){installReadyStateChangeImplementation()}else{installSetTimeoutImplementation()}l.setImmediate=setImmediate;l.clearImmediate=clearImmediate}(typeof self==="undefined"?typeof global==="undefined"?this:global:self));
+
+
+var transition =
+        "webkitTransition" in document.body.style ? (transitionend = "webkitTransitionEnd") && "webkitTransition" :
+        "mozTransition" in document.body.style ? "mozTransition" :
+        "transition" in document.body.style ? "transition" :
+        false;
