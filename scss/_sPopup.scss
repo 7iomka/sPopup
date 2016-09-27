@@ -11,7 +11,7 @@
     background: white;
     background: $baseColor;
     box-sizing: border-box;
-    transition: all 1s ease;
+    transition: all 0.8s ease;
     z-index: 999;
 
 
@@ -26,7 +26,7 @@
     }
 
     &.sPopup--closed {
-      z-index: -1;
+      visibility: hidden;
     }
 
     &.sPopup_not_fullwidth {
@@ -48,12 +48,15 @@
     }
     .sPopup_content {
 
-      &.sPopup__content-expanded > * {
+      &.sPopup__content--expanded > * {
           width: 100%;
           float: none;
           margin: auto;
           // padding: 0;
           display: block;
+      }
+      &.sPopup_content--noInnerOffset > * {
+        padding: 0;
       }
     }
 }
@@ -73,13 +76,13 @@
     -webkit-user-select: none;
 
     opacity: 0;
-    transform: translate3d(0,100%,0);
-    transition: 0.5s ease all;
+    // transform: translate3d(0,100%,0);
+    // transition: 0.5s ease all;
 
     .sPopup--open & {
-      transition-delay: 1s;
+      // transition-delay: 1s;
       opacity: 1;
-      transform: translate3d(0,0,0);
+      // transform: translate3d(0,0,0);
     }
 }
 
