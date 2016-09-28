@@ -114,7 +114,7 @@
     this.activeElement = false;
 
     // Default state of sPopup
-    this.isClosed = true;
+    this.isAnimating = false;
     this.isOpen = false;
 
 /************** ****************** *************/
@@ -190,10 +190,13 @@
 
 
   sPopup.prototype._openItem = function(e, item) {
+
+    if( this.isAnimating || this.isOpen ) return;
+    this.isAnimating = true;
+    this.isOpen = true;
+
     // basic memoization
     var self = this;
-      // If current state of popup is closed
-      if (this.isClosed) {
           // onBeforeOpenItem callback
           this.options.onBeforeOpenItem(this, item);
 
@@ -244,26 +247,24 @@
           function postOpenEvent() {
             // onAfterOpenItem callback
             self.options.onAfterOpenItem(self, item);
-            self.isClosed = false;
+            // self.isClosed = false;
             self.isOpen = true;
             self.baseElement.removeEventListener(transitionEND(), postOpenEvent);
-
+            self.isAnimating = false;
 
           }
           // onTransitionend toggle corresponding global flags
           this.baseElement.addEventListener(transitionEND(), postOpenEvent);
-
-      }
-
 
 
   }
 
 
   sPopup.prototype._closeItem = function(e) {
+    if( !this.isOpen || this.isAnimating ) return;
+		this.isOpen = false;
+		this.isAnimating = true;
 
-      // If current state of popup is opened
-      if (this.isOpen) {
           // onBeforeCloseItem callback
           this.options.onBeforeCloseItem(this, item);
 
@@ -291,8 +292,9 @@
 
                 // when popup finally is closed - remove html from that && toggle corresponding global flags
                 if (self.baseElement.classList.contains(self.stateClassList.closedClass)) {
-                    self.isClosed = true;
+                    // self.isClosed = true;
                     self.isOpen = false;
+                    self.isAnimating = false;
                     // onAfterCloseItem callback
                     self.options.onAfterCloseItem(self, item);
 
@@ -303,8 +305,6 @@
             // onTransitionend
             this.baseElement.addEventListener(transitionEND(), postCloseEvent);
 
-
-      }
 
   }
 
