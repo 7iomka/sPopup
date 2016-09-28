@@ -121,7 +121,7 @@
 
 
 /***** Other settings depended by options *****/
-    console.table(this);
+    // console.table(this);
     // Set content background from options
     this.containerElement.style.background = this.options.background;
     // Set overlay background from options
@@ -242,12 +242,12 @@
 
 
           function postOpenEvent() {
-
+            // onAfterOpenItem callback
+            self.options.onAfterOpenItem(self, item);
             self.isClosed = false;
             self.isOpen = true;
             self.baseElement.removeEventListener(transitionEND(), postOpenEvent);
-            // onAfterOpenItem callback
-            self.options.onAfterOpenItem(self, item);
+
 
           }
           // onTransitionend toggle corresponding global flags
@@ -262,11 +262,12 @@
 
   sPopup.prototype._closeItem = function(e) {
 
-      var item = this.activeElement;
       // If current state of popup is opened
       if (this.isOpen) {
           // onBeforeCloseItem callback
           this.options.onBeforeCloseItem(this, item);
+
+          var item = this.activeElement;
           // append for baseElement styles memoized in initPosition of previous (open-event)
           setStyle(this.baseElement, this.initPosition);
           this.overlayElement.style.opacity = 0;
