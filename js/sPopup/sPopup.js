@@ -147,7 +147,7 @@
     		this.items.forEach(function(item) {
 
     			var touchend = function(e) {
-    					e.preentDefault();
+    					e.preventDefault();
               e.stopPropagation();
     					self._openItem(e, item);
     					item.removeEventListener('touchend', touchend);
@@ -173,8 +173,10 @@
 
 
         // Initalize click event on the close button
-        this.closeElement.addEventListener('click', function () {
-          self._closeItem();
+        this.closeElement.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          self._closeItem(e);
         });
 
         // Initalize resize evenet with callback from options
@@ -240,11 +242,13 @@
 
 
           function postOpenEvent() {
+
             self.isClosed = false;
             self.isOpen = true;
             self.baseElement.removeEventListener(transitionEND(), postOpenEvent);
             // onAfterOpenItem callback
             self.options.onAfterOpenItem(self, item);
+
           }
           // onTransitionend toggle corresponding global flags
           this.baseElement.addEventListener(transitionEND(), postOpenEvent);
@@ -265,7 +269,7 @@
           this.options.onBeforeCloseItem(this, item);
           // append for baseElement styles memoized in initPosition of previous (open-event)
           setStyle(this.baseElement, this.initPosition);
-
+          this.overlayElement.style.opacity = 0;
 
           // base memoization
           var self = this;
@@ -273,14 +277,9 @@
 
           function postCloseEvent() {
 
-
-              setImmediate(function() {
                 // remove all transitions from baseElement
                 self.baseElement.style.transition = 'none';
-              });
 
-              // make async without 0 timeout
-              setImmediate(function() {
                 if(hasBorderBox(item)) {
                   self.contentElement.classList.remove(self.stateClassList.noInnerOffsetClass);
                 }
@@ -289,26 +288,17 @@
                 self.baseElement.classList.remove(self.stateClassList.openClass);
                 self.contentElement.innerHTML = '';
 
-                  // self.contentElement.classList.remove(self.options.expandedClassOfContentBase);
+                // when popup finally is closed - remove html from that && toggle corresponding global flags
+                if (self.baseElement.classList.contains(self.stateClassList.closedClass)) {
+                    self.isClosed = true;
+                    self.isOpen = false;
+                    // onAfterCloseItem callback
+                    self.options.onAfterCloseItem(self, item);
 
+                }
+                self.baseElement.removeEventListener(transitionEND(), postCloseEvent);
 
-                  // when popup finally is closed - remove html from that && toggle corresponding global flags
-                  if (self.baseElement.classList.contains(self.stateClassList.closedClass)) {
-                      // self.baseElement.style.transition = '15s ease all';
-                      self.isClosed = true;
-                      self.isOpen = false;
-                      self.options.onAfterCloseItem(self, item);
-
-                      // getComputedStyle( self.activeElement )[ transition ];
-                  }
-                  self.baseElement.removeEventListener(transitionEND(), postCloseEvent);
-                  // onAfterCloseItem callback
-
-              });
-
-
-
-            }
+          }
             // onTransitionend
             this.baseElement.addEventListener(transitionEND(), postCloseEvent);
 

@@ -9,15 +9,15 @@ var startedPopup = new sPopup('.mockup-grid__item', {
   // contentMaxWidth: '50%',
   overlayTransition: 'ease',
   onBeforeOpenItem: function (instance, item) {
-    alert('Open start');
+    console.log('Open start');
   },
   onAfterOpenItem: function (instance, item) {
-    alert('Open end');
+    console.log('Open end');
   },
   onBeforeCloseItem: function (instance, item) {
-    alert('Close start');
+    console.log('Close start');
   },
   onAfterCloseItem: function (instance, item) {
-    alert('Close end');
+    console.log('Close end');
   },
 });
